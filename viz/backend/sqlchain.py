@@ -1,13 +1,15 @@
-from langchain import OpenAI, SQLDatabase, SQLDatabaseChain
+from langchain import SQLDatabase, SQLDatabaseChain
+from langchain.chat_models import ChatOpenAI
 import config
 from langchain.output_parsers import CommaSeparatedListOutputParser
 from langchain.prompts import PromptTemplate, ChatPromptTemplate, HumanMessagePromptTemplate
 import sqlalchemy as sqldb
 from sqlalchemy import text
+from geoalchemy2 import Geometry
 
 
 def sqlchain(input_text):
-    llm = OpenAI(openai_api_key=config.openai_key,
+    llm = ChatOpenAI(openai_api_key=config.openai_key,
                  model_name="gpt-3.5-turbo", temperature=0, verbose=True)
     db = SQLDatabase.from_uri(
         f"postgresql+psycopg2://postgres:{config.sql_key}@localhost:5432/{config.database_name}")
@@ -17,9 +19,9 @@ def sqlchain(input_text):
 
     _CUSTOMIZE__TEMPLATE = """You are a PostgreSQL expert. Given an input question, first create a syntactically correct PostgreSQL query to run then look at the results of the query and return the answer to the input question.
     You must always query for the name column (e.g., generation name, line name, bus name). Never query for all columns from a table.  Wrap each column name in double quotes (") to denote them as delimited identifiers.
-    When users query about state or county, you can use ST_GeomFromText(wkt) and postgis functions to calculate spatial relationship between geo entities. 
+    When users query about state or county, you can use ST_GeomFromText(wkt) and postgis functions to calculate spatial relationship between geo entities.
     Pay attention to use only the column names you can see in the tables below. Be careful to not query for columns that do not exist. Also, pay attention to which column is in which table.
-    First look the postgre database for an answer, if you can't find related answer from the database, you can use you own knowlwedge to answer the questions. 
+    First look the postgre database for an answer, if you can't find related answer from the database, you can use you own knowlwedge to answer the questions.
 
     Use the following format:
 
