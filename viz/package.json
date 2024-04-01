@@ -2,7 +2,7 @@
   "name": "geojson",
   "version": "0.0.0",  
   "scripts": {
-    "start-local": "webpack-dev-server --env.local --progress --hot --open",
+    "start-local": "webpack-dev-server --env.local --progress --hot --open --host 0.0.0.0",
     "start": "webpack-dev-server --progress --hot --open "
   },
   "dependencies": {
